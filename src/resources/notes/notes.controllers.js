@@ -108,14 +108,14 @@ export const create = tryCatchWrapper(async function (req, res, next) {
 
   try {
       const [turkishWordResult] = await pool.query(
-          "INSERT INTO turkish_words (kategori, uraian) VALUES (?)",
+          "INSERT INTO turkish_words (kategori, uraian) VALUES (?, ?)",
           [category, turkishWord]
       );
 
       const turkishWordId = turkishWordResult.insertId;
 
       await pool.query(
-          "INSERT INTO indonesian_translations (turkish_word_id, kategori, uraian) VALUES (?, ?)",
+          "INSERT INTO indonesian_translations (turkish_word_id, kategori, uraian) VALUES (?, ?, ?)",
           [turkishWordId, category, indonesianTranslation]
       );
 
@@ -137,14 +137,14 @@ export const createBatch = tryCatchWrapper(async function (req, res, next) {
               return next(createCustomError("All fields are required", 400));
 
           const [turkishWordResult] = await pool.query(
-              "INSERT INTO turkish_words (kategori, uraian) VALUES (?)",
+              "INSERT INTO turkish_words (kategori, uraian) VALUES (?, ?)",
               [category, turkishWord]
           );
 
           const turkishWordId = turkishWordResult.insertId;
 
           await pool.query(
-              "INSERT INTO indonesian_translations (turkish_word_id, kategori, uraian) VALUES (?, ?)",
+              "INSERT INTO indonesian_translations (turkish_word_id, kategori, uraian) VALUES (?, ?, ?)",
               [turkishWordId, category, indonesianTranslation]
           );
       }
