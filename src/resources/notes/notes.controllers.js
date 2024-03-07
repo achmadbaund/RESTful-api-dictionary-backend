@@ -101,22 +101,22 @@ export const getLangPairs = tryCatchWrapper(async function (req, res, next) {
  * @route POST /notes
  */
 export const create = tryCatchWrapper(async function (req, res, next) {
-  const { turkishWord, indonesianTranslation } = req.body;
+  const { turkishWord, indonesianTranslation, category } = req.body;
 
   if (!turkishWord || !indonesianTranslation)
       return next(createCustomError("All fields are required", 400));
 
   try {
       const [turkishWordResult] = await pool.query(
-          "INSERT INTO turkish_words (uraian) VALUES (?)",
-          [turkishWord]
+          "INSERT INTO turkish_words (kategori, uraian) VALUES (?)",
+          [category, turkishWord]
       );
 
       const turkishWordId = turkishWordResult.insertId;
 
       await pool.query(
-          "INSERT INTO indonesian_translations (turkish_word_id, uraian) VALUES (?, ?)",
-          [turkishWordId, indonesianTranslation]
+          "INSERT INTO indonesian_translations (turkish_word_id, kategori, uraian) VALUES (?, ?)",
+          [turkishWordId, category, indonesianTranslation]
       );
 
       return res.status(201).json({ message: "Translation has been created" });
@@ -131,21 +131,21 @@ export const createBatch = tryCatchWrapper(async function (req, res, next) {
 
   try {
       for (const translation of translations) {
-          const { turkishWord, indonesianTranslation } = translation;
+          const { turkishWord, indonesianTranslation, category } = translation;
 
           if (!turkishWord || !indonesianTranslation)
               return next(createCustomError("All fields are required", 400));
 
           const [turkishWordResult] = await pool.query(
-              "INSERT INTO turkish_words (uraian) VALUES (?)",
-              [turkishWord]
+              "INSERT INTO turkish_words (kategori, uraian) VALUES (?)",
+              [category, turkishWord]
           );
 
           const turkishWordId = turkishWordResult.insertId;
 
           await pool.query(
-              "INSERT INTO indonesian_translations (turkish_word_id, uraian) VALUES (?, ?)",
-              [turkishWordId, indonesianTranslation]
+              "INSERT INTO indonesian_translations (turkish_word_id, kategori, uraian) VALUES (?, ?)",
+              [turkishWordId, category, indonesianTranslation]
           );
       }
 
